@@ -1,173 +1,168 @@
-# 📢 Notification Management System (Backend Only)
+# 🏆 Scraped Events
 
-The **Notification Management System** is a backend application designed to manage and deliver notifications to users. It differentiates between **critical and non-critical** notifications, ensuring that messages are delivered based on the recipient's **availability** and the nature of the notification.
-
----
-
-## 🌍 **Project Deployed Link (Render)**
-
-🔗 https://notification-management-system.onrender.com
+This is a **Full-Stack Web Application** that automatically scrapes event data for **Sydney, Australia** and displays it on a beautiful web page. Users can browse upcoming events, click **"GET TICKETS"**, enter their email, and be redirected to the original ticket website.
 
 ---
 
-## 🚀 **Features**
+---
 
-### 🔹 **Admin Capabilities**
+## 📌 **Features**
 
-- Send notifications to **a single user** or **multiple users** simultaneously.
-- Classify notifications as:
-  - **Critical Notifications**: Delivered **immediately**, regardless of recipient availability.
-  - **Non-Critical Notifications**: Delivered **only when** the recipient is available.
+### 🔹 **Event Scraping**
 
-### 🔹 **User Capabilities**
+- Scrapes events from Eventbrite **every 24 hours** using Cheerio.
+- Stores events in a **MongoDB database**.
 
-- Send notifications to **one or multiple users**.
-- Notifications adhere to the recipient's **availability**:
-  - ✅ **Available Time** → Notification is delivered immediately.
-  - ❌ **Unavailable Time** → Notification is **queued** and delivered once the recipient becomes available.
+### 🔹 **Web Application**
+
+- Beautiful **React.js** frontend with Tailwind CSS.
+- Displays **event title, date, and location** in a **responsive grid**.
+- "GET TICKETS" button opens a modal to collect user email.
+
+### 🔹 **User Interaction**
+
+- **Email Collection:** Before redirecting, users enter their email.
+- **Smart Redirect:** If an email has already been submitted, it redirects instantly.
+- **Opens Ticket Link in New Tab.**
+
+### 🔹 **Automated Background Job**
+
+- **`node-cron`** runs the scraper **every 24 hours**.
+- **Scraped events** are updated in MongoDB.
 
 ---
 
-## 🛠 **Technologies Used**
+## 🛠️ **Tech Stack**
 
-| Technology         | Description           |
-| ------------------ | --------------------- |
-| **Backend**        | Node.js, Express.js   |
-| **Database**       | MongoDB (Mongoose)    |
-| **Authentication** | JSON Web Tokens (JWT) |
-| **Scheduling**     | Node-Cron             |
+| Technology     | Purpose                |
+| -------------- | ---------------------- |
+| **Frontend**   | React.js, Tailwind CSS |
+| **Backend**    | Node.js, Express.js    |
+| **Database**   | MongoDB, Mongoose      |
+| **Scraping**   | Cheerio                |
+| **Scheduling** | Node-Cron              |
+|                |                        |
 
 ---
 
 ## 📂 **Project Structure**
 
 ```
-notification-management-system/
-├── config/
-│   └── database.js
-├── controllers/
-│   ├── userController.js
-|
-├── middleware/
-│   └── auth.js
-├── models/
-│   ├── Notification.js
-│   └── User.js
-├── routes/
-│   ├── userRoutes.js
+scraped-events/
+├── server/                  # Express.js backend
+│   ├── controllers/          # API logic
+│   ├── models/               # Mongoose schemas
+│   ├── routes/               # Express API routes
+│   ├── utils/                # Scraper and cron jobs
+│   ├── config/               # Database connection
+│   ├── index.js              # Server entry point
 │
-├── utils/
-│   └── notificationScheduler.js
-|   |__ checkAvailiability.js
-|
-├── .gitignore
-├── index.js
-├── package.json
-└── README.md
+├── frontend/                 # React frontend
+│   ├── src/
+│   │   ├── components/       # UI components
+│   │   ├── modals/           # Modal for email input
+│   │   ├── pages/            # Pages (Home, etc.)
+│   │   ├── App.js            # Main React App
+│   │   ├── index.js          # React entry point
+│
+├── .env                      # Environment variables
+├── package.json              # Dependencies
+├── README.md                 # Project Documentation
 ```
 
 ---
 
-## 👤 **API Endpoints**
+## 🔥 **Setup & Installation**
 
-### 🔑 **Authentication**
+### **1️⃣ Clone the Repository**
 
-#### ✅ **Register a New User**
-
-- **Endpoint:** `POST /users/signup`
-
-- **Request Body:**
-  ```json
-  {
-    "email": "novneet100@gmail.com",
-    "password": "asd"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "message": "User created successfully",
-    "newUser": {
-      "email": "novneet100@gmail.com",
-      "password": "$2b$10$pVl7TzekqadVPVFtMvMwzeqjFbKMK2tR9a1gY/GJZ2u4fagO6KELe",
-      "availabilityTime": [],
-      "isAdmin": false,
-      "_id": "679a3cb4cf41fd47e7116679",
-      "__v": 0
-    }
-  }
-  ```
-
-#### ✅ **User Login**
-
-- **Endpoint:** `POST /users/login`
-
-- **Request Body:**
-  ```json
-  {
-    "email": "novneet300@gmail.com",
-    "password": "asd"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "message": "User logged in successfully",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
-
----
-
-### 🔧 **Profile Management** (Protected Route - Requires Token)
-
-#### ✅ **Update Profile**
-
-- **Endpoint:** `PUT /users/update-profile`
-
-- **Request Body:**
-  ```json
-  {
-    "name": "Novneet",
-    "mobileNumber": "+917007927209",
-    "bio": "Aspiring Software Developer",
-    "availabilityTime": ["16:00-17:00", "18:00-19:00"]
-  }
-  ```
-
----
-
-### 📢 **Notification Management** (Protected Route - Requires Token)
-
-#### ✅ **Create Notifications**
-
-- **Endpoint:** `POST /users/create-notifications`
-
-- **Request Body:**
-  ```json
-  {
-    "sender": "679a06796086e22ce221856b",
-    "recipients": ["679a01d395902e7308fd2aaf", "679a01cd95902e7308fd2aac"],
-    "message": "Hello from Admin",
-    "isCritical": true
-  }
-  ```
-
----
-
-## ⏳ **Notification Scheduler**
-
-- Runs every **30 seconds** to check **pending notifications**.
-- **Critical Notifications** → Printed immediately on the console.
-- **Non-Critical Notifications** → Delivered based on the recipient's availability.
-
----
-
-## **I have already created an admin**
-
-```json
-{
-  "email": "novneet300@gmail.com",
-  "password": "asd"
-}
+```sh
+git clone https://github.com/novneetsingh/scraped-events.git
+cd scraped-events
 ```
+
+### **2️⃣ Install Dependencies**
+
+```sh
+# Install Backend Dependencies
+cd backend
+npm install
+
+# Install Frontend Dependencies
+cd ../frontend
+npm install
+```
+
+### **3️⃣ Configure Environment Variables**
+
+Create a **`.env`** file in the **backend** folder:
+
+```env
+VITE_BACKEND_URL=http://localhost:5000
+MONGO_URI=mongodb+srv://your-mongodb-url
+PORT=5000
+```
+
+---
+
+## 🚀 **Run the Project**
+
+### **Start the Backend**
+
+```sh
+cd backend
+npm start
+```
+
+**Runs on**: `http://localhost:5000`
+
+### **Start the Frontend**
+
+```sh
+cd frontend
+npm run dev
+```
+
+**Runs on**: `http://localhost:5173`
+
+---
+
+## 🔄 **How Event Scraping Works**
+
+1. **Every 24 hours**, `node-cron` runs the Cheerio script.
+2. **Extracts** event title, date, location, and ticket link.
+3. **Stores/Updates** events in MongoDB.
+4. **Website updates automatically** with the latest events.
+
+---
+
+## 💪 **Challenges Faced & Solutions**
+
+### **❌ Getting Events from Website**
+
+👉 **Solution:** Used Cheerio and Axios to fetch and parse event data efficiently.
+
+### **❌ Keeping Data Updated**
+
+👉 **Solution:** Implemented `node-cron` to scrape every 24 hours.
+
+### **❌ Preventing Duplicate Submissions**
+
+👉 **Solution:** Used **state tracking** to manage email submissions.
+
+---
+
+---
+
+## 🎯 **Assignment Requirements (Checklist)**
+
+✅ **Scrapes Events** from Eventbrite ✅\
+✅ **Lists Events Beautifully** on Website ✅\
+✅ **User Email Collection Before Redirecting** ✅\
+✅ **Opens Ticket in New Tab** ✅\
+✅ **Runs Every 24 Hours** ✅\
+✅ **Setup Instructions & Documentation Provided** ✅
+
+---
+
+🚀 **Built for the Internship Assignment.**
