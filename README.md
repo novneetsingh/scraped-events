@@ -114,7 +114,7 @@ cd backend
 npm start
 ```
 
-**Runs on**: `http://localhost:5000`
+**Runs on**: `https://scrapedevents.onrender.com`
 
 ### **Start the Frontend**
 
@@ -123,7 +123,7 @@ cd frontend
 npm run dev
 ```
 
-**Runs on**: `http://localhost:5173`
+**Runs on**: `https://scraped-events.onrender.com`
 
 ---
 
